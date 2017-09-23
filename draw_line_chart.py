@@ -1,8 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
 
+delimiter = ","
+headers = 1
+filename = sys.argv[1]
+basename = filename.split(".")[0]
 
-filename = "a.csv"
 data = np.genfromtxt(
     filename, delimiter=",", skip_header=1,
     dtype=[('time', 'f'), ('x', 'f'), ('y', 'f'), ('z', 'f')]
@@ -19,4 +23,5 @@ ax.plot(time, acc_z, 'y', label='z', linewidth=2)
 legend = ax.legend(loc="best", shadow=True, title="axis")
 plt.xlabel("Time/s")
 plt.ylabel("Accelerations/g")
-plt.show()
+plt.savefig("%s.png" % basename)
+# plt.show()
