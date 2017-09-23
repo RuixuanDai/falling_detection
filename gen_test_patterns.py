@@ -1,11 +1,12 @@
 import random
-count = 5
+import json
+count = 40
 set_size = 5
 stable = "standing"
-normal_activities = ["SIT&UP", "LIE&UP", "WALK", "BEND&UP", "BF4", "FF6", "RF2", "LF2"]
-fallings = ["BF1", "BF2", "BF3", "FF1", "FF2", "FF3", "FF4", "FF5", "RF1", "LF1"]
+normal_activities = ["Sit&Up", "Lie&Up", "Walk", "Bend&Up", "BF-recovery", "FF-recovery", "RF-recovery", "LF-recovery"]
+fallings = ["BF-Sitting", "BF-Lying", "BF3-Lateral", "FF-Knee", "FF-ArmProtection", "FF-LyingFlat", "FF-LateralRight", "FF-LateralLeft", "RF-Lying", "LF-Lying"]
 stable_duration = 10
-activity_duration = 5
+activity_duration = 10
 
 
 def generate_activity_set(set_size, normal_activities, test_set):
@@ -38,22 +39,16 @@ def generate_final_sets(test_sets, stable):
         stables = [stable] * 5
         final_set = []
         map(lambda item: final_set.extend(item), zip(stables, l))
-        final_sets.append(final_set)
+        time = 0
+        l = []
+        for item in final_set:
+            duration = stable_duration if item == stable else activity_duration
+            item = [item, time, time + duration]
+            l.append(item)
+            time += duration
+        final_sets.append(l)
+
     return final_sets
-
-
-def format_test_set(test_set, activity_duration, stable_duration, stable):
-    result = []
-    time = 0
-    for activity in test_set:
-        if activity == stable:
-            duration = stable_duration
-        else:
-            duration = activity_duration
-        item = "%s(%s-%ss)" % (activity, time, time + duration)
-        result.append(item)
-        time += duration
-    return " ".join(result)
 
 
 
@@ -61,11 +56,20 @@ normal_tests, falling_tests = generate_activity_sets(set_size, normal_activities
 final_normal_tests = generate_final_sets(normal_tests, stable)
 final_falling_tests = generate_final_sets(falling_tests, stable)
 
+f1 = open("normal_activity.txt", "w")
+f2 = open("normal_activity.json", "w")
 print("normal activity test sets are:")
 for (index, test) in enumerate(final_normal_tests):
-    print("test %s: %s" % (index, format_test_set(test, activity_duration, stable_duration, stable)))
+    f1.write("test %s: %s\n\n" %
+          (index, " ".join(
+              map(lambda item: "%s(%s~%s)" % (item[0], item[1], item[2]), test))))
+    f2.write(json.dumps(test) + "\n")
 
-
+f3 = open("falling.txt", "w")
+f4 = open("falling.json", "w")
 print("falling activity test sets are:")
 for (index, test) in enumerate(final_falling_tests):
-    print("test %s: %s" % (index, format_test_set(test, activity_duration, stable_duration, stable)))
+    f3.write("test %s: %s\n\n" %
+          (index, " ".join(
+              map(lambda item: "%s(%s~%s)" % (item[0], item[1], item[2]), test))))
+    f4.write(json.dumps(test) + "\n")
