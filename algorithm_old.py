@@ -1,8 +1,8 @@
-import json
 from collections import defaultdict
 import math
 from pprint import pprint
 import click
+import json
 
 
 @click.command()
@@ -10,12 +10,8 @@ import click
 @click.option("--window_length", type=int, help="length of detection window")
 @click.option("--th_y", type=float, help="threshold of y_diff")
 @click.option("--th_smv", type=float, help="threshold of smv_avg")
-@click.option("--th_y_recovery", type=float, help="threshold of y_diff")
-@click.option("--th_smv_recovery", type=float, help="threshold of smv_avg")
 @click.option("--testfile", type=str, help="testfile")
-def detect_falling(
-        filename, window_length, th_y, th_smv,
-        th_y_recovery, th_smv_recovery, testfile):
+def detect_falling(filename, window_length, th_y, th_smv, testfile):
     raw_data = get_rawdata(filename, window_length)
     window_count = len(raw_data)
     y_max = {}
@@ -30,34 +26,18 @@ def detect_falling(
     test_index = int(filter(lambda item: item.isdigit(), filename))
     tests = json.loads(open(testfile).readlines()[test_index-1])
 
-    window = min(y_diff.keys())
-    while True:
-        if (window >= window_count):
-            break
+    for window in range(window_count):
         activity = find_activity(tests, window, window_length)
         if is_falling(y_diff[window],smv_avg[window], th_y, th_smv):
-            recovery_window = is_recovery(
-                {key: y_diff[key] for key in range(window + 1, window + 6)},
-                {key: smv_avg[key] for key in range(window + 1, window + 6)},
-                th_y_recovery, th_smv_recovery)
-            if recovery_window is None:
-                print(
-                    "falling is detected during [%d, %d), y_diff is %f, smv_avg is %f, activity=%s" %
-                    (window * window_length, window * window_length + window_length, y_diff[window], smv_avg[window], activity))
-            else:
-                print(
-                    "Recovery after falling during [%d, %d), y_diff is %f, smv_avg is %f, activity=%s" %
-                    (window * window_length, window * window_length + window_length, y_diff[window], smv_avg[window], activity))
-                activity = find_activity(tests, recovery_window, window_length)
-                print(
-                    "Recovery is detected during [%d, %d), y_diff is %f, smv_avg is %f, activity=%s" %
-                    (recovery_window * window_length, recovery_window * window_length + window_length, y_diff[recovery_window], smv_avg[recovery_window], activity))
-            window += 6
+            print(
+                "falling is detected during [%d, %d), y_diff is %f, smv_avg is %f, activity=%s" %
+                (window * window_length, window * window_length + window_length, y_diff[window], smv_avg[window], activity)
+            )
         else:
             print(
                 "only normal activities during [%d, %d), y_diff is %f, smv_avg is %f, activity=%s" %
-                (window * window_length, window * window_length + window_length, y_diff[window], smv_avg[window], activity))
-            window += 1
+                (window * window_length, window * window_length + window_length, y_diff[window], smv_avg[window], activity)
+            )
 
 
 def find_activity(tests, window, window_length):
@@ -71,14 +51,6 @@ def is_falling(y_diff, smv_avg, th_y, th_smv):
         return True
     else:
         False
-
-
-def is_recovery(y_diffs, smv_avgs, th_y, th_smv):
-    for (window, y_diff) in y_diffs.items():
-        smv_avg = smv_avgs[window]
-        if (y_diff >= th_y) and (smv_avg >= th_smv):
-            return window
-    return None
 
 
 def get_rawdata(filename, window_length):
