@@ -3,11 +3,11 @@ import json
 count = 40
 set_size = 5
 stable = "standing"
-normal_activities = ["Sit&Up", "Lie&Up", "Walk", "Bend&Up", "BFRecovery", "FFRecovery", "RFRecovery", "LFRecovery"]
-fallings = ["BF-Sitting", "BF-Lying", "BF-Lateral", "FF-Knee", "FF-ArmProtection", "FF-LyingFlat", "FF-LateralRight", "FF-LateralLeft", "RF-Lying", "LF-Lying"]
+normal_activities = ["Sit&Up", "Lie&Up", "Walk", "Bend&Up"]
+fallings = ["BackwardFalling", "ForwardFalling","RightSideFalling", "LeftSideFalling"]
 stable_duration = 10
 activity_duration = 10
-falling_duration = 20
+falling_duration = 10
 
 
 def generate_activity_set(set_size, normal_activities, test_set):
