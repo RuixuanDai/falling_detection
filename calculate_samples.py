@@ -43,6 +43,7 @@ def calculate_samples(directory):
                 z.append(acc_z)
                 smv.append(
                     math.sqrt(acc_x * acc_x + acc_y * acc_y + acc_z * acc_z))
+            print(filename)
             x_max = max(x)
             x_min = min(x)
             x_avg = sum(x) / len(x)
@@ -52,6 +53,8 @@ def calculate_samples(directory):
             y_min = min(y)
             y_avg = sum(y) / len(y)
             y_diff = y_max - y_min
+            print(y_max)
+            print(y_min)
 
             z_max = max(z)
             z_min = min(z)
